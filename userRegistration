@@ -1,0 +1,61 @@
+<?php
+define('HOST', 'localhost');
+define('USER', 'root');
+define('PASS', '');
+define('DB', 'dbname');
+
+
+
+$con = mysqli_connect(HOST, USER, PASS, DB) or die('Unable to Connect');
+if ($con) {
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        
+        if (function_exists('date_default_timezone_set')) {
+            
+            date_default_timezone_set('Asia/Kolkata');
+            
+        }
+        
+        $CreatedDate = date('d-m-Y h:i:s');
+        
+        //Getting post data 
+        $Name = $_POST['Name'];
+        $Email    = $_POST['Email'];
+        $Phone    = $_POST['Phone'];
+        $Password = $_POST['Password'];
+        
+        
+        //checking if the received values are blank
+        
+        $checkuser = "Select Email from `tblUser` where `Email`='" . $Email . "'";
+        
+        $result = mysqli_query($con, $checkuser);
+        
+        $rowcount = mysqli_num_rows($result);
+        
+        if ($rowcount == 0) {
+            $sql = "INSERT INTO `tblUser`(`Name`, `Email`, `Phone`, `Password`,`CreatedDate`) VALUES('".$Name. "','" .$Email. "','" . $Phone . "','" .md5($Password). "','" .$CreatedDate."')";
+            
+            //Trying to insert the values to db 
+            if (mysqli_query($con, $sql)) {
+                echo "RegistrationSuccessful";
+
+            } else {
+                echo "RegistrationFailed";
+            }
+        } else {
+            echo "AlreadyRegistered";
+        }
+        
+        //Closing the database connection 
+        mysqli_close($con);
+        
+    } else {
+        echo 'error';
+        mysqli_close($con);
+    }
+} else {
+    echo "ConnectionFailed";
+}
+?>
